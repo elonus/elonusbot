@@ -48,5 +48,6 @@ while True:
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2]
         sender = data.split("!")[0].strip(":")
-        if str(message) == "hello":
+        message = message.capitalize()
+        if str(message) == "Hello":
             answer(data, "hello " + sender)
