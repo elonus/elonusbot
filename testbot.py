@@ -1,8 +1,6 @@
 import socket
 from time import sleep
 
-functions = {".math" : "argument arithmetic", "hello" : "noargument hello"} 
-
 def ping(data):
     irc.send( "PONG " + data.split() [ 1 ] + "\r\n" )
 
@@ -60,6 +58,8 @@ def arithmetic(data):
     send(data, "The answer to " + expression + " is: " + str(answer))
 
 
+functions = {".math" : {"argument": True, "function": arithmetic}, "hello" : {"argument" : False, "function" : hello}}
+
 network = "irc.freenode.net"
 port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
@@ -96,7 +96,7 @@ while True:
 
         if codeword in functions:
 
-            if functions[codeword].split()[0] == "argument":
+            if functions[codeword]["argument"]:
                 try:
                     message.split()[1]
 
@@ -104,11 +104,12 @@ while True:
                     send(data, codeword + " expects an argument")
 
                 else:
-                    eval(functions[codeword].split()[1] + "('" + data2 + "')")
+                    functions[codeword]["function"](data2)
 
             else:
-                eval(functions[codeword].split()[1] + "('" + data2 + "')")
+                functions[codeword]["function"](data2)
 
+"hello" ' + str(send("t t #elenusbottest", "this bot has major flaws."))+' 
 
 
 """
