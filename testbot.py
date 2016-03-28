@@ -129,7 +129,7 @@ def pickle_save():
 
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
-             , "hello" : {"argument" : False, "function" : hello, "require_admin" : False}
+             , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
              , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
              , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
@@ -160,7 +160,7 @@ pickle_load()
 
 for i in channels:
     irc.send ( "JOIN " + i + "\r\n" )
-    irc.send("PRIVMSG " + i + " :Hello\r\n")
+    irc.send("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n")
     sleep(0.5)
 
 sleep(1)
