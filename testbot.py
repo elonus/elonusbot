@@ -78,18 +78,38 @@ def part_channel(data):
         send(data, "I have left " + channel_name)
         channels.remove(channel_name)
 
+def add_admin(data):
+    message = data.split(":")[2]
+    add_name = message.split()[1]
+    admins.append(add_name)
+    send(data, add_name + " has been added to the admin list")
+
+def list_admins(data):
+    adminList = ""
+    for i in admins:
+        if len(adminList) == 0:
+            adminList += i
+
+        else:
+            adminList += ", " + i
+
+    send(data, "This is a list of the current admins: " + i)
+
     
-functions = {".math" : {"argument": True, "function": arithmetic}
-             , "hello" : {"argument" : False, "function" : hello}
-             , ".join" : {"argument" : True, "function" : join_channel}
-             , ".part" : {"argument" : True, "function" : part_channel}}
+functions = {".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
+             , "hello" : {"argument" : False, "function" : hello, "require_admin" : False}
+             , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
+             , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
+             , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
+             , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-channels = ["#elenusbottest"]
+channels = ["#elenusbottest", "#elenusbottest2"]
+admins = ["elonus"]
 print(data)
 
 irc.send ( "NICK ElonusBot2\r\n" )
@@ -98,11 +118,16 @@ sleep(2)
 irc.send ( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n")
 
 data = irc.recv(4096)
+
 if data.find("PING"):
     ping(data)
-irc.send ( "JOIN #elenusbottest\r\n" )
-sleep(2)
-irc.send ( "PRIVMSG #elenusbottest :Hello.\r\n" )
+
+for i in channels:
+    irc.send ( "JOIN " + i + "\r\n" )
+    irc.send("PRIVMSG " + i + " :Hello\r\n")
+    sleep(0.5)
+
+sleep(1)
 
 while True:
     data = irc.recv(4096).strip("\r\n")
@@ -119,36 +144,21 @@ while True:
         
         data2 = str(data)
 
-        if codeword in functions:
+        if (sender not in admins) and functions[codeword]["require_admin"]:
+            send(data, codeword + " requires admin access")
 
-            if functions[codeword]["argument"]:
-                try:
-                    message.split()[1]
+        else:
+            if codeword in functions:
 
-                except IndexError:
-                    send(data, codeword + " expects an argument")
+                if functions[codeword]["argument"]:
+                    try:
+                        message.split()[1]
+
+                    except IndexError:
+                        send(data, codeword + " expects an argument")
+
+                    else:
+                        functions[codeword]["function"](data2)
 
                 else:
                     functions[codeword]["function"](data2)
-
-            else:
-                functions[codeword]["function"](data2)
-
-"hello" ' + str(send("t t #elenusbottest", "this bot has major flaws."))+' 
-
-
-"""
-        if codeword == "Hello":
-            send(data, "hello " + sender)
-
-        elif
-        
-        try:
-             message.split()[1]
-
-        except IndexError:
-             send(data, "This function needs an argument")
-
-        else:
-             for 
-"""
