@@ -4,8 +4,8 @@ import pickle
 import os
 import sys
 
-#persist_admins = open('persist_admins.bin',mode='r+')
-#persist_channels = open('persist_channels.bin',mode='r+')
+persist_admins = open('persist_admins.bin',mode='r+')
+persist_channels = open('persist_channels.bin',mode='r+')
 
 def stop():
     pickle_save()
@@ -111,13 +111,15 @@ def help_commands(data):
         command_list += " " + i
 
     send(data, "This is a list of the available commands:" + command_list)
-def persist_load():
-    admins = pickle.load(file=persist_admins,encoding='ASCII',errors='strict')
-    channels = pickle.load(file=persist_channels,encoding='ASCII',errors='strict')
+def pickle_load():
+    global admins
+    global channels
+    admins = pickle.load(file=persist_admins)
+    channels = pickle.load(file=persist_channels)
 
 def pickle_save():
-    #persist_channels.close()
-    #persist_admins.close()
+    persist_channels.close()
+    persist_admins.close()
     persist_admins = open('persist_admins.bin',mode='w+')
     persist_channels = open('persist_channels.bin',mode='w+')
     pickle.dump(admins,persist_admins,protocol=None)
@@ -140,8 +142,8 @@ port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-channels = ["#elenusbottest", "#elenusbottest2"]
-admins = ["elonus","MSF"]
+#channels = ["#elenusbottest", "#elenusbottest2"]
+#admins = ["elonus","MSF"]
 print(data)
 
 irc.send ( "NICK ElonusBot2\r\n" )
@@ -154,7 +156,7 @@ data = irc.recv(4096)
 if data.find("PING"):
     ping(data)
 
-pickle_save()
+pickle_load()
 
 for i in channels:
     irc.send ( "JOIN " + i + "\r\n" )
