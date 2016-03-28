@@ -1,5 +1,15 @@
 import socket
 from time import sleep
+import pickle
+import os
+import sys
+
+#persist_admins = open('persist_admins.bin',mode='r+')
+#persist_channels = open('persist_channels.bin',mode='r+')
+
+def stop():
+    pickle_save()
+    os.execl(sys.executable, sys.executable, *sys.argv)
 
 def ping(data):
     irc.send( "PONG " + data.split() [ 1 ] + "\r\n" )
@@ -101,15 +111,29 @@ def help_commands(data):
         command_list += " " + i
 
     send(data, "This is a list of the available commands:" + command_list)
+def persist_load():
+    admins = pickle.load(file=persist_admins,encoding='ASCII',errors='strict')
+    channels = pickle.load(file=persist_channels,encoding='ASCII',errors='strict')
 
-    
+def pickle_save():
+    #persist_channels.close()
+    #persist_admins.close()
+    persist_admins = open('persist_admins.bin',mode='w+')
+    persist_channels = open('persist_channels.bin',mode='w+')
+    pickle.dump(admins,persist_admins,protocol=None)
+    pickle.dump(channels,persist_channels,protocol=None)
+    persist_admins.flush()
+    persist_channels.flush()
+
+
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , "hello" : {"argument" : False, "function" : hello, "require_admin" : False}
              , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
              , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
-             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}}
+             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
+             , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}}
 
 network = "irc.freenode.net"
 port = 6667
@@ -117,7 +141,7 @@ irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
 channels = ["#elenusbottest", "#elenusbottest2"]
-admins = ["elonus"]
+admins = ["elonus","MSF"]
 print(data)
 
 irc.send ( "NICK ElonusBot2\r\n" )
@@ -129,6 +153,8 @@ data = irc.recv(4096)
 
 if data.find("PING"):
     ping(data)
+
+pickle_save()
 
 for i in channels:
     irc.send ( "JOIN " + i + "\r\n" )
@@ -143,7 +169,8 @@ while True:
 
     if data.find("PING") != -1:
         ping(data)
-
+    if data.find(".stop") != -1:
+        stop()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
