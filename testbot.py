@@ -58,7 +58,21 @@ def arithmetic(data):
     send(data, "The answer to " + expression + " is: " + str(answer))
 
 
-functions = {".math" : {"argument": True, "function": arithmetic}, "hello" : {"argument" : False, "function" : hello}}
+def join_channel(data):
+    message = data.split(":")[2]
+    channel_name = message.split()[1]
+    irc.send("JOIN " + channel_name + "\r\n")
+
+def part_channel(data):
+    message = data.split(":")[2]
+    channel_name = message.split()[1]
+    irc.send("PART " + channel_name + "\r\n")
+
+    
+functions = {".math" : {"argument": True, "function": arithmetic}
+             , "hello" : {"argument" : False, "function" : hello}
+             , ".join" : {"argument" : True, "function" : join_channel}
+             , ".part" : {"argument" : True, "function" : part_channel}}
 
 network = "irc.freenode.net"
 port = 6667
@@ -67,10 +81,10 @@ irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
 print(data)
 
-irc.send ( "NICK ElonusBot\r\n" )
-irc.send ( "USER ElonusBot ElonusBot ElonusBot :Elonus testbot\r\n" )
+irc.send ( "NICK ElonusBot2\r\n" )
+irc.send ( "USER ElonusBot2 ElonusBot2 ElonusBot2 :Elonus testbot\r\n" )
 sleep(2)
-irc.send ( "PRIVMSG NickServ: identify gutta4197\r\n")
+irc.send ( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n")
 
 data = irc.recv(4096)
 if data.find("PING"):
