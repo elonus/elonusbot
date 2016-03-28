@@ -95,13 +95,21 @@ def list_admins(data):
 
     send(data, "This is a list of the current admins: " + i)
 
+def help_commands(data):
+    command_list = ""
+    for i in functions:
+        command_list += " " + i
+
+    send(data, "This is a list of the available commands:" + command_list)
+
     
-functions = {".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
+functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , "hello" : {"argument" : False, "function" : hello, "require_admin" : False}
              , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
              , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
-             , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}}
+             , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
+             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
@@ -137,19 +145,26 @@ while True:
         ping(data)
 
     elif data.find("PRIVMSG") != -1:
-        message = data.split(":")[2]
+        message = data.split(":")[2:]
+        if type(message) == list:
+            new_message = ""
+            for i in message:
+                new_message += i
+            message = new_message
+            
         codeword = message.split()[0]
         codeword = codeword.lower()
         sender = data.split("!")[0].strip(":")
         
         data2 = str(data)
 
-        if (sender not in admins) and functions[codeword]["require_admin"]:
-            send(data, codeword + " requires admin access")
+        if codeword in functions:
 
-        else:
-            if codeword in functions:
+            if (sender not in admins) and functions[codeword]["require_admin"]:
+                send(data, codeword + " requires admin access")
 
+            else:
+                
                 if functions[codeword]["argument"]:
                     try:
                         message.split()[1]
