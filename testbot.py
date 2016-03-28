@@ -61,12 +61,22 @@ def arithmetic(data):
 def join_channel(data):
     message = data.split(":")[2]
     channel_name = message.split()[1]
-    irc.send("JOIN " + channel_name + "\r\n")
+    if channel_name in channels:
+        send(data, "I am already in " + channel_name)
+    else:
+        irc.send("JOIN " + channel_name + "\r\n")
+        send(data, "I have joined " + channel_name)
+        channels.append(channel_name)
 
 def part_channel(data):
     message = data.split(":")[2]
     channel_name = message.split()[1]
-    irc.send("PART " + channel_name + "\r\n")
+    if channel_name not in channels:
+        send(data, "I am not in " + channel_name)
+    else:
+        irc.send("PART " + channel_name + "\r\n")
+        send(data, "I have left " + channel_name)
+        channels.remove(channel_name)
 
     
 functions = {".math" : {"argument": True, "function": arithmetic}
@@ -79,6 +89,7 @@ port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
+channels = ["#elenusbottest"]
 print(data)
 
 irc.send ( "NICK ElonusBot2\r\n" )
