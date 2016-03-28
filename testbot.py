@@ -77,6 +77,8 @@ def join_channel(data):
         irc.send("JOIN " + channel_name + "\r\n")
         send(data, "I have joined " + channel_name)
         channels.append(channel_name)
+def update():
+    os.system('git pull')
 
 def part_channel(data):
     message = data.split(":")[2]
@@ -135,7 +137,8 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
              , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
-             , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}}
+             , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}
+             , ".update" : {"argument": False, "function": update, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
@@ -152,9 +155,6 @@ sleep(2)
 irc.send ( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n")
 
 data = irc.recv(4096)
-
-if data.find("PING"):
-    ping(data)
 
 pickle_load()
 
@@ -173,6 +173,8 @@ while True:
         ping(data)
     if data.find(".stop") != -1:
         stop()
+    if data.find(".update"):
+        update()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
