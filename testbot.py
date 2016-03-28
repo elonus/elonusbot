@@ -103,7 +103,7 @@ def list_admins(data):
         else:
             adminList += ", " + i
 
-    send(data, "This is a list of the current admins: " + i)
+    send(data, "This is a list of the current admins: " + adminList)
 
 def help_commands(data):
     command_list = ""
