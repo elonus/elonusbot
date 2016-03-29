@@ -155,7 +155,7 @@ port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-#channels = ["#elenusbottest", "#elenusbottest2"]
+channels += "#team-redux"
 #admins = ["elonus","MSF"]
 print(data)
 
