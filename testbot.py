@@ -133,7 +133,8 @@ def pickle_save():
     pickle.dump(channels,persist_channels,protocol=None)
     persist_admins.flush()
     persist_channels.flush()
-
+def source():
+    irc.send("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!")
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
@@ -143,7 +144,8 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
              , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
              , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}
-             , ".update" : {"argument": False, "function": update, "require_admin" : False}}
+             , ".update" : {"argument": False, "function": update, "require_admin" : False}
+             , ".source" : {"argument": False, "function": source, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
@@ -179,6 +181,8 @@ while True:
         stop()
     if data.find(".update") != -1:
         update()
+    if data.find(".source") != -1:
+        source()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
