@@ -10,8 +10,9 @@ persist_channels = open('persist_channels.bin',mode='r+')
 def stop():
     pickle_save()
     os.execl(sys.executable, sys.executable, *sys.argv)
+    
 if sys.argv[0] == "blank_test":
-    os.system('killall python')
+    quit()
     
 def ping(data):
     irc.send( "PONG " + data.split() [ 1 ] + "\r\n" )
