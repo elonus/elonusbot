@@ -1,6 +1,19 @@
 import socket
 from time import sleep
+import pickle
+import os
+import sys
 
+persist_admins = open('persist_admins.bin',mode='r+')
+persist_channels = open('persist_channels.bin',mode='r+')
+
+def stop():
+    pickle_save()
+    os.execl(sys.executable, sys.executable, *sys.argv)
+    
+if sys.argv[0] == "blank_test":
+    quit()
+    
 def ping(data):
     irc.send( "PONG " + data.split() [ 1 ] + "\r\n" )
 
@@ -67,6 +80,8 @@ def join_channel(data):
         irc.send("JOIN " + channel_name + "\r\n")
         send(data, "I have joined " + channel_name)
         channels.append(channel_name)
+def update():
+    os.system('git pull')
 
 def part_channel(data):
     message = data.split(":")[2]
@@ -93,7 +108,7 @@ def list_admins(data):
         else:
             adminList += ", " + i
 
-    send(data, "This is a list of the current admins: " + i)
+    send(data, "This is a list of the current admins: " + adminList)
 
 def help_commands(data):
     command_list = ""
@@ -101,23 +116,41 @@ def help_commands(data):
         command_list += " " + i
 
     send(data, "This is a list of the available commands:" + command_list)
+def pickle_load():
+    global admins
+    global channels
+    admins = pickle.load(file=persist_admins)
+    channels = pickle.load(file=persist_channels)
+    channels.append("#team-redux")
+    admins.append("msf-jarvis")
 
-    
+def pickle_save():
+    persist_channels.close()
+    persist_admins.close()
+    persist_admins = open('persist_admins.bin',mode='w+')
+    persist_channels = open('persist_channels.bin',mode='w+')
+    pickle.dump(admins,persist_admins,protocol=None)
+    pickle.dump(channels,persist_channels,protocol=None)
+    persist_admins.flush()
+    persist_channels.flush()
+
+
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
-             , "hello" : {"argument" : False, "function" : hello, "require_admin" : False}
+             , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
              , ".join" : {"argument" : True, "function" : join_channel, "require_admin" : True}
              , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
-             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}}
+             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
+             , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}
+             , ".update" : {"argument": False, "function": update, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-channels = ["#elenusbottest", "#elenusbottest2"]
-admins = ["elonus"]
+#admins = ["elonus","MSF"]
 print(data)
 
 irc.send ( "NICK ElonusBot2\r\n" )
@@ -127,12 +160,11 @@ irc.send ( "PRIVMSG NickServ: identify elonusbot gutta4197\r\n")
 
 data = irc.recv(4096)
 
-if data.find("PING"):
-    ping(data)
+pickle_load()
 
 for i in channels:
     irc.send ( "JOIN " + i + "\r\n" )
-    irc.send("PRIVMSG " + i + " :Hello\r\n")
+    irc.send("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n")
     sleep(0.5)
 
 sleep(1)
@@ -143,7 +175,10 @@ while True:
 
     if data.find("PING") != -1:
         ping(data)
-
+    if data.find(".stop") != -1:
+        stop()
+    if data.find(".update") != -1:
+        update()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
