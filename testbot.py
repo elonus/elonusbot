@@ -135,8 +135,8 @@ def pickle_save():
     pickle.dump(channels,persist_channels,protocol=None)
     persist_admins.flush()
     persist_channels.flush()
-def source():
-    irc.send("The source is available at https://github.com/elonus/elonusbot .  Fork and improve!")
+def source(data):
+    irc.send(data, "The source is available at https://github.com/elonus/elonusbot .  Fork and improve!")
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
@@ -183,8 +183,6 @@ while True:
         stop()
     if data.find(".update") != -1:
         update()
-    if data.find(".source") != -1:
-        source()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
         if type(message) == list:
