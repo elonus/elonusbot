@@ -134,15 +134,6 @@ def pickle_save():
     persist_admins.flush()
     persist_channels.flush()
 
-def add_channel(channel):
-    channels += channel
-    for i in channels:
-        irc.send ( "PART " + i + "Rebooting..." + "\r\n" )
-        sleep(0.5)
-    for i in channels:
-        irc.send ( "JOIN " + i + "\r\n" )
-        irc.send("PRIVMSG " + i + " :Hello, I am ElonusBot and I love pancakes!\r\n")
-        sleep(0.5)
 
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , ".hello" : {"argument" : False, "function" : hello, "require_admin" : False}
@@ -152,8 +143,7 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
              , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
              , ".stop" : {"argument": False, "funtion": stop, "require_admin": True}
-             , ".update" : {"argument": False, "function": update, "require_admin" : False}
-             , ".addchannel" : {"argument" : True, "function" : add_channel, "require_admin" : True}}
+             , ".update" : {"argument": False, "function": update, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
