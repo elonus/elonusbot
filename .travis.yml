@@ -3,3 +3,5 @@ python :
     - "2.7"
 script :
     - python testbot.py blank_test
+sudo : required
+dist : wily
