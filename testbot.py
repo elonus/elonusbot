@@ -122,6 +122,7 @@ def pickle_load():
     admins = pickle.load(file=persist_admins)
     channels = pickle.load(file=persist_channels)
     channels.append("#team-redux")
+    admins.append("msf-jarvis")
 
 def pickle_save():
     persist_channels.close()
