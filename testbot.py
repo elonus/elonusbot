@@ -118,6 +118,7 @@ def pickle_load():
     global channels
     admins = pickle.load(file=persist_admins)
     channels = pickle.load(file=persist_channels)
+    channels.append("#team-redux")
 
 def pickle_save():
     persist_channels.close()
@@ -155,7 +156,6 @@ port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-channels.append("#team-redux")
 #admins = ["elonus","MSF"]
 print(data)
 
