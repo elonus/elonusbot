@@ -1,4 +1,4 @@
-import socket, sys
+import socket
 from time import sleep
 
 def ping(data):
@@ -102,14 +102,6 @@ def help_commands(data):
 
     send(data, "This is a list of the available commands:" + command_list)
 
-def source(data):
-    send(data, "Here you can find the source for the bot: https://github.com/elonus/elonusbot. Feel free to either fork it or contribute to the code :)")
-
-
-def stop(data):
-    irc.send("QUIT\r\n")
-    irc.close()
-    sys.exit("Stopped the bot")
     
 functions = { ".math" : {"argument": True, "function": arithmetic, "require_admin" : False}
              , "hello" : {"argument" : False, "function" : hello, "require_admin" : False}
@@ -117,17 +109,15 @@ functions = { ".math" : {"argument": True, "function": arithmetic, "require_admi
              , ".part" : {"argument" : True, "function" : part_channel, "require_admin" : True}
              , ".addadmin" : {"argument" : True, "function" : add_admin, "require_admin" : True}
              , ".listadmins" : {"argument" : False, "function" : list_admins, "require_admin" : False}
-             , ".source" : {"argument": False, "function": source, "require_admin" : False}
-             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}
-             , ".stop" : {"argument": False, "function": stop, "require_admin" : True}}
+             , ".help" : {"argument": False, "function": help_commands, "require_admin" : False}}
 
 network = "irc.freenode.net"
 port = 6667
 irc = socket.socket (socket.AF_INET, socket.TCP_NODELAY)
 irc.connect ( ( network, port ) )
 data = irc.recv ( 4096 )
-channels = ["#elenusbottest"]
-admins = ["elonus", "MSF"]
+channels = ["#elenusbottest", "#elenusbottest2"]
+admins = ["elonus"]
 print(data)
 
 irc.send ( "NICK ElonusBot2\r\n" )
