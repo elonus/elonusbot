@@ -186,7 +186,7 @@ while True:
         ping(data)
     if data.find(".stop") != -1:
         stop()
-    if data.find(".update"):
+    if data.find(".update") != -1:
         update()
     elif data.find("PRIVMSG") != -1:
         message = data.split(":")[2:]
